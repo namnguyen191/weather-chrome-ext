@@ -1,5 +1,9 @@
-import reloadOnUpdate from "virtual:reload-on-update-in-background-script";
+import {
+  persistCitiesToLocalStorage,
+  persistScaleToLocalStorage,
+} from '@src/utils/storage';
 
-reloadOnUpdate("pages/background");
-
-console.log("background loaded");
+chrome.runtime.onInstalled.addListener(() => {
+  persistCitiesToLocalStorage([]);
+  persistScaleToLocalStorage('c');
+});
