@@ -7,6 +7,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import DeleteIcon from '@mui/icons-material/Delete';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import IconButton from '@mui/material/IconButton/IconButton';
 import CardHeader from '@mui/material/CardHeader/CardHeader';
 import { celToFar } from '@src/utils/math';
@@ -14,6 +15,7 @@ import {
   getWeatherDataFromLocalStorage,
   persistWeatherDataToLocalStorage,
 } from '@src/utils/storage';
+import { Box } from '@mui/material';
 
 export type WeatherCardProps = {
   city: string;
@@ -27,10 +29,12 @@ const WeatherCard: React.FC<WeatherCardProps> = (props) => {
     useState<WeatherDataAPIResponseWithTimeStamp>();
   const [error, setError] = useState<string | null>();
 
-  const getWeatherData = async (): Promise<void> => {
-    // try fetching from local storage first
-    let data: WeatherDataAPIResponseWithTimeStamp | undefined | null =
-      await getWeatherDataFromLocalStorage(city);
+  const getWeatherData = async (refresh: boolean): Promise<void> => {
+    let data: WeatherDataAPIResponseWithTimeStamp | undefined | null = null;
+    // try fetching from local storage
+    if (!refresh) {
+      data = await getWeatherDataFromLocalStorage(city);
+    }
 
     // if nothing then fetch from API
     if (!data) {
@@ -53,7 +57,7 @@ const WeatherCard: React.FC<WeatherCardProps> = (props) => {
   };
 
   useEffect(() => {
-    getWeatherData().then();
+    getWeatherData(false).then();
   }, [city]);
 
   if (error) {
@@ -92,19 +96,39 @@ const WeatherCard: React.FC<WeatherCardProps> = (props) => {
     );
   }
 
+  const mainTemp: number = Math.round(
+    scale === 'f' ? celToFar(weatherData.main.temp) : weatherData.main.temp
+  );
+  const mainFeel: number = Math.round(
+    scale === 'f'
+      ? celToFar(weatherData.main.feels_like)
+      : weatherData.main.feels_like
+  );
+  const scaleSymbol: string = scale === 'c' ? '\u2103' : '\u2109';
+
   return (
     <Card sx={{ width: '100%' }}>
       <CardContent>
         <CardHeader
           action={
-            <IconButton
-              onClick={onDelete}
-              color="error"
-              sx={{ p: '3px' }}
-              aria-label="delete weather card"
-            >
-              <DeleteIcon />
-            </IconButton>
+            <Box>
+              <IconButton
+                onClick={() => getWeatherData(true).then()}
+                color="primary"
+                sx={{ p: '3px' }}
+                aria-label="refresh weather info"
+              >
+                <RefreshIcon />
+              </IconButton>
+              <IconButton
+                onClick={onDelete}
+                color="error"
+                sx={{ p: '3px' }}
+                aria-label="delete weather card"
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Box>
           }
           title={
             <Typography variant="h3" style={{ textTransform: 'capitalize' }}>
@@ -122,19 +146,9 @@ const WeatherCard: React.FC<WeatherCardProps> = (props) => {
           })}`}
         />
         <Typography variant="body2">
-          Temp:{' '}
-          {Math.round(
-            scale === 'f'
-              ? celToFar(weatherData.main.temp)
-              : weatherData.main.temp
-          )}
+          Temp: {mainTemp + scaleSymbol}
           <br />
-          Feels like:{' '}
-          {Math.round(
-            scale === 'f'
-              ? celToFar(weatherData.main.feels_like)
-              : weatherData.main.feels_like
-          )}
+          Feels like: {mainFeel + scaleSymbol}
         </Typography>
       </CardContent>
     </Card>
