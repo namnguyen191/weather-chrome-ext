@@ -42,7 +42,8 @@ const WeatherCard: React.FC<WeatherCardProps> = (props) => {
         return;
       }
 
-      data = { ...apiData, lastUpdate: new Date() };
+      const now = new Date();
+      data = { ...apiData, lastUpdate: now.toString() };
 
       // persist to local storage
       await persistWeatherDataToLocalStorage(city, data);
@@ -110,16 +111,15 @@ const WeatherCard: React.FC<WeatherCardProps> = (props) => {
               {city}
             </Typography>
           }
-          subheader={`Last updated on: ${weatherData.lastUpdate.toLocaleDateString(
-            undefined,
-            {
-              weekday: 'short',
-              month: 'short',
-              day: 'numeric',
-              hour: 'numeric',
-              minute: 'numeric',
-            }
-          )}`}
+          subheader={`Last updated on: ${new Date(
+            weatherData.lastUpdate
+          ).toLocaleDateString(undefined, {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+          })}`}
         />
         <Typography variant="body2">
           Temp:{' '}

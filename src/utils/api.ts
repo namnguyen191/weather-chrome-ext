@@ -19,7 +19,7 @@ export type WeatherDataAPIResponse = {
 };
 
 export type WeatherDataAPIResponseWithTimeStamp = WeatherDataAPIResponse & {
-  lastUpdate: Date;
+  lastUpdate: string;
 };
 
 export type Coord = {
