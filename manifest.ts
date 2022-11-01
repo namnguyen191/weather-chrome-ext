@@ -5,7 +5,6 @@ const manifest: chrome.runtime.ManifestV3 = {
   name: packageJson.name,
   version: packageJson.version,
   description: packageJson.description,
-  options_page: 'src/pages/options/index.html',
   permissions: ['storage'],
   background: {
     service_worker: 'src/pages/background/index.js',
@@ -28,7 +27,6 @@ const manifest: chrome.runtime.ManifestV3 = {
       css: ['assets/css/contentStyle.chunk.css'],
     },
   ],
-  devtools_page: 'src/pages/devtools/index.html',
   web_accessible_resources: [
     {
       resources: [

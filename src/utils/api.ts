@@ -18,6 +18,10 @@ export type WeatherDataAPIResponse = {
   cod: number;
 };
 
+export type WeatherDataAPIResponseWithTimeStamp = WeatherDataAPIResponse & {
+  lastUpdate: Date;
+};
+
 export type Coord = {
   lon: number;
   lat: number;

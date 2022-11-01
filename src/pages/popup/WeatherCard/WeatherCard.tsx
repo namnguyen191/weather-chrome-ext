@@ -1,4 +1,7 @@
-import { fetchWeatherData, WeatherDataAPIResponse } from '@src/utils/api';
+import {
+  fetchWeatherData,
+  WeatherDataAPIResponseWithTimeStamp,
+} from '@src/utils/api';
 import React, { useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -7,6 +10,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton/IconButton';
 import CardHeader from '@mui/material/CardHeader/CardHeader';
 import { celToFar } from '@src/utils/math';
+import {
+  getWeatherDataFromLocalStorage,
+  persistWeatherDataToLocalStorage,
+} from '@src/utils/storage';
 
 export type WeatherCardProps = {
   city: string;
@@ -16,17 +23,36 @@ export type WeatherCardProps = {
 
 const WeatherCard: React.FC<WeatherCardProps> = (props) => {
   const { city, onDelete, scale } = props;
-  const [weatherData, setWeatherData] = useState<WeatherDataAPIResponse>();
+  const [weatherData, setWeatherData] =
+    useState<WeatherDataAPIResponseWithTimeStamp>();
   const [error, setError] = useState<string | null>();
 
-  useEffect(() => {
-    fetchWeatherData(city).then((data) => {
-      if (data) {
-        setWeatherData(data);
-      } else {
+  const getWeatherData = async (): Promise<void> => {
+    // try fetching from local storage first
+    let data: WeatherDataAPIResponseWithTimeStamp | undefined | null =
+      await getWeatherDataFromLocalStorage(city);
+
+    // if nothing then fetch from API
+    if (!data) {
+      const apiData = await fetchWeatherData(city);
+
+      // no data from API either
+      if (!apiData) {
         setError(`Something went wrong fetching weather data for "${city}"`);
+        return;
       }
-    });
+
+      data = { ...apiData, lastUpdate: new Date() };
+
+      // persist to local storage
+      await persistWeatherDataToLocalStorage(city, data);
+    }
+
+    setWeatherData(data);
+  };
+
+  useEffect(() => {
+    getWeatherData().then();
   }, [city]);
 
   if (error) {
@@ -84,12 +110,16 @@ const WeatherCard: React.FC<WeatherCardProps> = (props) => {
               {city}
             </Typography>
           }
-          subheader={new Date().toLocaleDateString(undefined, {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}
+          subheader={`Last updated on: ${weatherData.lastUpdate.toLocaleDateString(
+            undefined,
+            {
+              weekday: 'short',
+              month: 'short',
+              day: 'numeric',
+              hour: 'numeric',
+              minute: 'numeric',
+            }
+          )}`}
         />
         <Typography variant="body2">
           Temp:{' '}
