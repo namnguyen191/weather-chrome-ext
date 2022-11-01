@@ -15,7 +15,7 @@ import {
   getWeatherDataFromLocalStorage,
   persistWeatherDataToLocalStorage,
 } from '@src/utils/storage';
-import { Box } from '@mui/material';
+import { Box, Divider } from '@mui/material';
 
 export type WeatherCardProps = {
   city: string;
@@ -104,6 +104,16 @@ const WeatherCard: React.FC<WeatherCardProps> = (props) => {
       ? celToFar(weatherData.main.feels_like)
       : weatherData.main.feels_like
   );
+  const mainMax: number = Math.round(
+    scale === 'f'
+      ? celToFar(weatherData.main.temp_max)
+      : weatherData.main.temp_max
+  );
+  const mainMin: number = Math.round(
+    scale === 'f'
+      ? celToFar(weatherData.main.temp_min)
+      : weatherData.main.temp_min
+  );
   const scaleSymbol: string = scale === 'c' ? '\u2103' : '\u2109';
 
   return (
@@ -145,11 +155,30 @@ const WeatherCard: React.FC<WeatherCardProps> = (props) => {
             minute: 'numeric',
           })}`}
         />
-        <Typography variant="body2">
-          Temp: {mainTemp + scaleSymbol}
-          <br />
-          Feels like: {mainFeel + scaleSymbol}
-        </Typography>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            width: 'fit-content',
+            gap: '0.5rem',
+          }}
+        >
+          <Typography variant="body2">
+            Temp: {mainTemp + scaleSymbol}
+          </Typography>
+          <Divider orientation="vertical" flexItem />
+          <Typography variant="body2">
+            Feels like: {mainFeel + scaleSymbol}
+          </Typography>
+          <Divider orientation="vertical" flexItem />
+          <Typography variant="body2">
+            Min temp: {mainMin + scaleSymbol}
+          </Typography>
+          <Divider orientation="vertical" flexItem />
+          <Typography variant="body2">
+            Max temp: {mainMax + scaleSymbol}
+          </Typography>
+        </Box>
       </CardContent>
     </Card>
   );
