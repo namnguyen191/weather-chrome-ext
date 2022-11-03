@@ -45,10 +45,13 @@ export const persistWeatherDataToLocalStorage = async (
   city: string,
   data: WeatherDataAPIResponseWithTimeStamp
 ): Promise<void> => {
-  const oldData: WeatherDataAPIResponse | undefined =
-    await getWeatherDataFromLocalStorage(city);
+  const weatherKey: LocalStorageKeys[] = ['weathers'];
+
+  const oldData: LocalStorageData = (await chrome.storage.local.get(
+    weatherKey
+  )) as LocalStorageData;
   await chrome.storage.local.set({
-    weathers: { ...oldData, [city]: data },
+    weathers: { ...oldData.weathers, [city]: data },
   });
 };
 
