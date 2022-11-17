@@ -15,7 +15,7 @@ import {
   getWeatherDataFromLocalStorage,
   persistWeatherDataToLocalStorage,
 } from '@src/utils/storage';
-import { Box, Divider } from '@mui/material';
+import { Avatar, Box, Divider } from '@mui/material';
 
 export type WeatherCardProps = {
   city: string;
@@ -115,11 +115,17 @@ const WeatherCard: React.FC<WeatherCardProps> = (props) => {
       : weatherData.main.temp_min
   );
   const scaleSymbol: string = scale === 'c' ? '\u2103' : '\u2109';
+  const weatherIconUrl = `http://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`;
 
   return (
     <Card sx={{ width: '100%' }}>
       <CardContent>
         <CardHeader
+          avatar={
+            <Avatar src={weatherIconUrl} aria-label="weather icon">
+              R
+            </Avatar>
+          }
           action={
             <Box>
               <IconButton
