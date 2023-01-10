@@ -1,26 +1,34 @@
-import React from "react";
-import logo from "@assets/img/logo.svg";
-import "@pages/newtab/Newtab.css";
-import "@pages/newtab/Newtab.scss";
+import '@pages/newtab/Newtab.css';
+import '@pages/newtab/Newtab.scss';
 
 const Newtab = () => {
+  const generateVapour = () => {
+    const vaporDelay = [
+      1, 3, 16, 5, 13, 20, 6, 7, 10, 8, 17, 11, 12, 14, 2, 9, 15, 4, 19,
+    ];
+
+    return vaporDelay.map((de) => {
+      return (
+        <span key={de} style={{ animationDelay: `calc(${de} * -0.5s)` }}></span>
+      );
+    });
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/pages/newtab/Newtab.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React!
-        </a>
-        <h6>The color of this paragraph is defined using SASS.</h6>
-      </header>
+    <div className="hotCupOfTeaContainer">
+      <div className="container">
+        <div className="plate"></div>
+        <div className="cup">
+          <div className="top">
+            <div className="vapour">{generateVapour()}</div>
+            <div className="circle">
+              <div className="tea"></div>
+            </div>
+          </div>
+          <div className="handle"></div>
+        </div>
+        <h1 className="title">Cappuchouno</h1>
+      </div>
     </div>
   );
 };
