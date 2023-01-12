@@ -15,6 +15,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 const Popup = () => {
   const [cities, setCities] = useState<string[]>([]);
   const [scale, setScale] = useState<'c' | 'f'>('c');
+
   const inputRef = useRef<HTMLInputElement>();
 
   const addCity = () => {

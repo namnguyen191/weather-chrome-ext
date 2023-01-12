@@ -16,6 +16,7 @@ import {
   persistWeatherDataToLocalStorage,
 } from '@src/utils/storage';
 import { Avatar, Box, Divider } from '@mui/material';
+import styles from './WeatherCard.module.scss';
 
 export type WeatherCardProps = {
   city: string;
@@ -115,16 +116,21 @@ const WeatherCard: React.FC<WeatherCardProps> = (props) => {
       : weatherData.main.temp_min
   );
   const scaleSymbol: string = scale === 'c' ? '\u2103' : '\u2109';
-  const weatherIconUrl = `http://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`;
+  const weatherIconUrl = `/animated-icons/fill/openweathermap/${weatherData.weather[0].icon}.svg`;
 
   return (
     <Card sx={{ width: '100%' }}>
       <CardContent>
         <CardHeader
           avatar={
-            <Avatar src={weatherIconUrl} aria-label="weather icon">
-              R
-            </Avatar>
+            <div className={styles['tooltip']}>
+              <Avatar src={weatherIconUrl} aria-label="weather icon">
+                R
+              </Avatar>
+              <span className={styles['tooltiptext']}>
+                {weatherData.weather[0].description}
+              </span>
+            </div>
           }
           action={
             <Box>
@@ -147,7 +153,10 @@ const WeatherCard: React.FC<WeatherCardProps> = (props) => {
             </Box>
           }
           title={
-            <Typography variant="h3" style={{ textTransform: 'capitalize' }}>
+            <Typography
+              variant="h3"
+              style={{ textTransform: 'capitalize', fontSize: '2rem' }}
+            >
               {city}
             </Typography>
           }
@@ -165,6 +174,7 @@ const WeatherCard: React.FC<WeatherCardProps> = (props) => {
           sx={{
             display: 'flex',
             alignItems: 'flex-start',
+            justifyContent: 'center',
             width: 'fit-content',
             gap: '0.5rem',
           }}
