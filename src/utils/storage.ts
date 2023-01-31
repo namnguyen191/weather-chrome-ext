@@ -1,7 +1,4 @@
-import {
-  WeatherDataAPIResponse,
-  WeatherDataAPIResponseWithTimeStamp,
-} from './api';
+import { WeatherDataAPIResponseWithTimeStamp } from './api';
 
 export type LocalStorageData = {
   cities: string[];
@@ -14,7 +11,9 @@ export type LocalStorageKeys = keyof LocalStorageData;
 export const persistCitiesToLocalStorage = async (
   cities: string[]
 ): Promise<void> => {
-  await chrome.storage.local.set({ cities });
+  await chrome.storage.local.set({
+    cities: cities.map((city) => city.toLowerCase()),
+  });
 };
 
 export const getCitiesFromLocalStorage = async (): Promise<string[]> => {
@@ -51,7 +50,13 @@ export const persistWeatherDataToLocalStorage = async (
     weatherKey
   )) as LocalStorageData;
   await chrome.storage.local.set({
-    weathers: { ...oldData.weathers, [city]: data },
+    weathers: { ...oldData.weathers, [city.toLowerCase()]: data },
+  });
+};
+
+export const clearWeatherDataLocalStorage = async (): Promise<void> => {
+  await chrome.storage.local.set({
+    weathers: [],
   });
 };
 
