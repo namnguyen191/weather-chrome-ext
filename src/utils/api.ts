@@ -67,11 +67,27 @@ export type Sys = {
   sunset: number;
 };
 
-export const fetchWeatherData = async (
+export const fetchWeatherDataByCity = async (
   city: string
 ): Promise<WeatherDataAPIResponse | null> => {
   const res = await fetch(
     `${OPEN_WEATHER_BASE_URL}?q=${city}&units=metric&appid=${OPEN_WEATHER_API_KEY}`
+  );
+
+  if (!res.ok) {
+    return null;
+  }
+
+  const data: WeatherDataAPIResponse = await res.json();
+
+  return data;
+};
+
+export const fetchWeatherDataByCord = async (
+  cord: Coord
+): Promise<WeatherDataAPIResponse | null> => {
+  const res = await fetch(
+    `${OPEN_WEATHER_BASE_URL}?lat=${cord.lat}&lon=${cord.lon}&units=metric&appid=${OPEN_WEATHER_API_KEY}`
   );
 
   if (!res.ok) {

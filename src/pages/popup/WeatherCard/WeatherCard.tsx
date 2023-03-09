@@ -1,5 +1,7 @@
 import {
-  fetchWeatherData,
+  Coord,
+  fetchWeatherDataByCity,
+  fetchWeatherDataByCord,
   WeatherDataAPIResponseWithTimeStamp,
 } from '@src/utils/api';
 import React, { useEffect, useState } from 'react';
@@ -22,10 +24,11 @@ export type WeatherCardProps = {
   city: string;
   scale: 'c' | 'f';
   onDelete: () => void;
+  cord?: Coord;
 };
 
 const WeatherCard: React.FC<WeatherCardProps> = (props) => {
-  const { city, onDelete, scale } = props;
+  const { city, onDelete, scale, cord } = props;
   const [weatherData, setWeatherData] =
     useState<WeatherDataAPIResponseWithTimeStamp>();
   const [error, setError] = useState<string | null>();
@@ -39,7 +42,9 @@ const WeatherCard: React.FC<WeatherCardProps> = (props) => {
 
     // if nothing then fetch from API
     if (!data) {
-      const apiData = await fetchWeatherData(city);
+      const apiData = cord
+        ? await fetchWeatherDataByCord(cord)
+        : await fetchWeatherDataByCity(city);
 
       // no data from API either
       if (!apiData) {
@@ -50,8 +55,8 @@ const WeatherCard: React.FC<WeatherCardProps> = (props) => {
       const now = new Date();
       data = { ...apiData, lastUpdate: now.toString() };
 
-      // persist to local storage
-      await persistWeatherDataToLocalStorage(city, data);
+      // persist to local storage if it is not current location
+      if (!cord) await persistWeatherDataToLocalStorage(city, data);
     }
 
     setWeatherData(data);
@@ -59,7 +64,7 @@ const WeatherCard: React.FC<WeatherCardProps> = (props) => {
 
   useEffect(() => {
     getWeatherData(false).then();
-  }, [city]);
+  }, [city, cord]);
 
   if (error) {
     return (

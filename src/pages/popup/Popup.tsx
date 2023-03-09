@@ -10,9 +10,11 @@ import {
 } from '@src/utils/storage';
 import Grid from '@mui/material/Unstable_Grid2';
 import MainInput, { Scale } from './MainInput/MainInput';
+import { Coord } from '@src/utils/api';
 
 const Popup = () => {
   const [cities, setCities] = useState<string[]>([]);
+  const [currentLocation, setCurrentLocation] = useState<Coord | null>(null);
   const [scale, setScale] = useState<Scale>('c');
 
   const onAddCity = (addedCity: string): void => {
@@ -45,6 +47,10 @@ const Popup = () => {
     });
   };
 
+  const onGetUserLocation = (userLocation: Coord): void => {
+    setCurrentLocation(userLocation);
+  };
+
   useEffect(() => {
     getCitiesFromLocalStorage().then((cities) => setCities(cities));
     getScaleFromLocalStorage().then((sc) => setScale(sc));
@@ -53,7 +59,11 @@ const Popup = () => {
   return (
     <Grid container spacing={1}>
       <Grid xs={12}>
-        <MainInput onAddCity={onAddCity} onScaleChange={onScaleChange} />
+        <MainInput
+          onAddCity={onAddCity}
+          onScaleChange={onScaleChange}
+          onGetUserLocation={onGetUserLocation}
+        />
       </Grid>
       {cities.map((city, i) => (
         <Grid key={i} xs={12}>
@@ -64,6 +74,14 @@ const Popup = () => {
           />
         </Grid>
       ))}
+      {currentLocation && (
+        <WeatherCard
+          scale={scale}
+          city={'Your location'}
+          onDelete={() => setCurrentLocation(null)}
+          cord={currentLocation}
+        />
+      )}
     </Grid>
   );
 };
